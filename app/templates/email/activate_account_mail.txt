@@ -1,0 +1,6 @@
+Dear {{ user.username }},
+To activate your account click on the following link:
+{{ url_for('auth.reset_password', token=token, _external=True) }}
+If you have not register an account simply ignore this message.
+
+Sincerely yours, The ADS Platform Team

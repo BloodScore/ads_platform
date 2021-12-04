@@ -1,0 +1,17 @@
+{% extends 'platform/base.html' %}
+
+
+{% block app_content %}
+    {% if not current_user.is_anonymous %}
+        <h1>Hi, {{ current_user.username }}!</h1>
+    {% else %}
+        <h1>Hi, Anonymous!</h1>
+    {% endif %}
+
+    {% for ad in ads %}
+        {% include 'platform/_ad.html' %}
+    {% endfor %}
+
+    {% include 'platform/_pagination.html' %}
+
+{% endblock %}

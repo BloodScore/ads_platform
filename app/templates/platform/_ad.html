@@ -1,0 +1,22 @@
+<table class="table table-hover">
+    <tr>
+        <td width="70px">
+            <a href="{{ url_for('platform.profile', username=ad.user.username) }}">
+                <img src="{{ ad.user.avatar(70) }}" />
+            </a>
+        </td>
+        <td>
+            <a href="{{ url_for('platform.profile', username=ad.user.username) }}">
+                {{ ad.user.username }}
+            </a>
+            <br>
+                {{ ad.text_description }}
+            <br>
+                {{ ad.user_phone_number }}
+            <br>
+                {{ ad.location }}
+            <br>
+                {{ ad.price }}
+        </td>
+    </tr>
+</table>
