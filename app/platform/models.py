@@ -27,9 +27,10 @@ class Ad(SurrogatePK, Model):
     user_id = Column(db.Integer, db.ForeignKey('users.id'))
     text_description = Column(db.Text, nullable=False)
     location = Column(db.String(100), nullable=False)
-    price = Column(db.String(100), nullable=False)
+    price = Column(db.Integer, nullable=False)
     user_phone_number = Column(db.String(100), nullable=True)
     categories = relationship('Category', secondary=ad_category_table, back_populates='ads')
+    is_paid = Column(db.Boolean, default=False)
 
     def __init__(self, **kwargs):
         db.Model.__init__(self, **kwargs)

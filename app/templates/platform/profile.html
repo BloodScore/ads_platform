@@ -8,6 +8,12 @@
                 <h1>User: {{ user.username }}</h1>
                 {% if user.last_seen %}<p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>{% endif %}
                 {% if user == current_user %}
+                    <p>Email: {{ user.email }}</p>
+                {% endif %}
+                <p>First Name: {{ user.first_name }}</p>
+                <p>Last Name: {{ user.last_name }}</p>
+                <p>Phone Number: {{ user.phone_number }}</p>
+                {% if user == current_user %}
                     <p><a href="{{ url_for('platform.deactivate_account') }}">Deactivate my account</a></p>
                 {% endif %}
             </td>
@@ -15,8 +21,11 @@
         <tr>
             {% if current_user.username == user.username %}
                 {% for ad in ads %}
-                    {% include 'platform/_ad.html' %}
-                    <a href="{{ url_for('platform.delete_add', ad_id=ad.id) }}">Delete ad</a>
+                    {% if ad.is_paid %}
+                        {% include 'platform/_paid_ad.html' %}
+                    {% else %}
+                        {% include 'platform/_free_ad.html' %}
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         </tr>

@@ -2,15 +2,17 @@
 
 
 {% block app_content %}
-    {% if not current_user.is_anonymous %}
-        <h1>Hi, {{ current_user.username }}!</h1>
+    {% if ads %}
+        {% for ad in ads %}
+            {% if ad.is_paid %}
+                {% include 'platform/_paid_ad.html' %}
+            {% else %}
+                {% include 'platform/_free_ad.html' %}
+            {% endif %}
+        {% endfor %}
     {% else %}
-        <h1>Hi, Anonymous!</h1>
+        <h1>No ads found.</h1>
     {% endif %}
-
-    {% for ad in ads %}
-        {% include 'platform/_ad.html' %}
-    {% endfor %}
 
     {% include 'platform/_pagination.html' %}
 
