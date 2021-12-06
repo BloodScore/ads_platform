@@ -1,6 +1,7 @@
 import datetime as dt
 from hashlib import md5
 
+from datetime import datetime
 from time import time
 
 from flask import current_app
@@ -9,7 +10,7 @@ import jwt
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import login_manager
-from app.platform.models import Ad
+from app.platform.models import Ad, Message
 from utils.database import Column, Model, SurrogatePK, db, relationship
 
 
@@ -50,6 +51,16 @@ class User(UserMixin, SurrogatePK, Model):
     roles = relationship('Role', secondary=user_role_table, back_populates='users')
     ads = relationship('Ad', backref='user')
 
+    messages_sent = db.relationship('Message',
+                                    foreign_keys='Message.sender_id',
+                                    backref='sender',
+                                    lazy='dynamic')
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.recipient_id',
+                                        backref='recipient',
+                                        lazy='dynamic')
+    last_message_read_time = db.Column(db.DateTime)
+
     def __init__(self, username, email, password, phone_number, **kwargs):
         db.Model.__init__(self, username=username, email=email, phone_number=phone_number, **kwargs)
         self.set_password(password)
@@ -82,6 +93,10 @@ class User(UserMixin, SurrogatePK, Model):
     def avatar(self, size):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
+
+    def new_messages(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(recipient=self).filter(Message.timestamp > last_read_time).count()
 
 
 @login_manager.user_loader

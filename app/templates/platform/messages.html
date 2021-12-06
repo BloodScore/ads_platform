@@ -1,0 +1,16 @@
+{% extends 'platform/base.html' %}
+
+
+{% block app_content %}
+    {% if messages %}
+        <h1>Messages</h1>
+        {% for message in messages %}
+            {% include 'platform/_message.html' %}
+        {% endfor %}
+    {% else %}
+        <h1>No messages found.</h1>
+    {% endif %}
+
+    {% include 'platform/_pagination.html' %}
+
+{% endblock %}

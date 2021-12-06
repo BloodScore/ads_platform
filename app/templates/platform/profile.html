@@ -15,6 +15,8 @@
                 <p>Phone Number: {{ user.phone_number }}</p>
                 {% if user == current_user %}
                     <p><a href="{{ url_for('platform.deactivate_account') }}">Deactivate my account</a></p>
+                {% else %}
+                    <p><a href="{{ url_for('platform.send_message', user_id=user.id) }}">Send message</a></p>
                 {% endif %}
             </td>
         </tr>

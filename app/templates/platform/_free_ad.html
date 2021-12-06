@@ -6,8 +6,9 @@
             </a>
         </td>
         <td>
+            User:
             <a href="{{ url_for('platform.profile', username=ad.user.username) }}">
-                User: {{ ad.user.username }}
+                {{ ad.user.username }}
             </a>
             <br>
                 Categories:
@@ -28,6 +29,10 @@
                 <a href="{{ url_for('platform.delete_ad', ad_id=ad.id) }}">Delete ad</a>
                 <br>
                 <a href="{{ url_for('platform.make_payment', ad_id=ad.id) }}">Make ad paid</a>
+            </td>
+        {% else %}
+            <td style="width: 33%">
+                <a href="{{ url_for('platform.send_message', user_id=ad.user.id) }}">Send message to author</a>
             </td>
         {% endif %}
     </tr>

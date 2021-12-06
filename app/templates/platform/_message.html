@@ -1,0 +1,19 @@
+<table class="table table-hover">
+    <tr>
+        <td>
+            Sender:
+            <a href="{{ url_for('platform.profile', username=message.sender.username) }}">
+                {{ message.sender.username }}
+            </a>
+            <br>
+            To:
+			<a href="{{ url_for('platform.profile', username=message.sender.username) }}">
+                {{ message.recipient.username }}
+            </a>
+            <br>
+                Message: {{ message.text }}
+            <br>
+                Sent: {{ moment(message.timestamp).format('LLL') }}
+        </td>
+    </tr>
+</table>

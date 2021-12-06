@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextField, SelectMultipleField, SubmitField, IntegerField
-from wtforms.validators import DataRequired
+from wtforms import StringField, TextField, SelectMultipleField, SubmitField, IntegerField, TextAreaField
+from wtforms.validators import DataRequired, Length
 
 
 class AdCreationForm(FlaskForm):
@@ -25,3 +25,8 @@ class PaymentForm(FlaskForm):
     exp_date = StringField('Expiration Date')
     cvv = IntegerField('CVV-code')
     submit = SubmitField('Make payment')
+
+
+class MessageForm(FlaskForm):
+    message = TextAreaField('Message', validators=[DataRequired(), Length(min=0, max=140)])
+    submit = SubmitField('Send message')

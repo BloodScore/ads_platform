@@ -8,7 +8,7 @@ from app import admin, db, create_app
 app = create_app()
 
 from app.auth.models import Role, User
-from app.platform.models import Ad, Category
+from app.platform.models import Ad, Category, Message
 
 
 class AdminModelView(ModelView):
@@ -21,6 +21,7 @@ admin.add_view(AdminModelView(User, db.session))
 admin.add_view(AdminModelView(Role, db.session))
 admin.add_view(AdminModelView(Ad, db.session))
 admin.add_view(AdminModelView(Category, db.session))
+admin.add_view(AdminModelView(Message, db.session))
 
 
 @app.shell_context_processor
@@ -30,4 +31,5 @@ def make_shell_context():
         'User': User,
         'Ad': Ad,
         'Category': Category,
+        'Message': Message
     }

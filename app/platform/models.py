@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from utils.database import Column, Model, SurrogatePK, db, relationship
 
 
@@ -37,3 +39,15 @@ class Ad(SurrogatePK, Model):
 
     def __repr__(self):
         return f'<Ad {self.text_description}>'
+
+
+class Message(SurrogatePK, Model):
+    __tablename__ = 'messages'
+
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    text = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Message {self.text}>'

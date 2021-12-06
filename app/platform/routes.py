@@ -3,10 +3,12 @@ from datetime import datetime
 from flask import render_template, flash, redirect, url_for, request, current_app
 from flask_login import current_user, login_required
 
+from sqlalchemy import or_
+
 from app.auth.models import User
 from app.platform import platform_bp
-from app.platform.models import Ad, Category
-from app.platform.forms import AdCreationForm, SearchForm, PaymentForm
+from app.platform.models import Ad, Category, Message
+from app.platform.forms import AdCreationForm, SearchForm, PaymentForm, MessageForm
 
 
 @platform_bp.before_request
@@ -49,8 +51,11 @@ def profile(username):
 
 @platform_bp.route('/deactivate_account', methods=['GET', 'POST'])
 @login_required
-def deactivate_account():   # todo Delete related ads
+def deactivate_account():  # todo Delete related ads
     current_user.update(is_active=False)
+    ads = Ad.query.filter_by(user_id=current_user.id).all()
+    for ad in ads:
+        ad.delete()
     flash('Your account has been deactivated.')
     return redirect(url_for('auth.logout'))
 
@@ -115,7 +120,8 @@ def search_ad():
         return render_template(
             'platform/index.html',
             user=current_user,
-            ads=sorted(filtered_ads, key=lambda ad: ad.is_paid, reverse=True) if form.categories.data else sorted(ads.all(), key=lambda ad: ad.is_paid, reverse=True)
+            ads=sorted(filtered_ads, key=lambda ad: ad.is_paid, reverse=True) if form.categories.data else sorted(
+                ads.all(), key=lambda ad: ad.is_paid, reverse=True)
         )
 
     return render_template('platform/search_ad.html', title='Search', form=form)
@@ -140,3 +146,40 @@ def cancel_payment(ad_id):
     Ad.get_by_id(ad_id).update(is_paid=False)
     flash('Ad\'s payment was cancelled.')
     return redirect(url_for('platform.profile', username=current_user.username))
+
+
+@platform_bp.route('/messages', methods=['GET', 'POST'])
+@login_required
+def messages():
+    current_user.update(last_message_read_time=datetime.utcnow())
+    page = request.args.get('page', 1, type=int)
+    messages_list = Message.query.filter(or_(
+        Message.sender_id == current_user.id, Message.recipient_id == current_user.id
+    )).order_by(Message.timestamp.desc()).paginate(page, current_app.config['ADS_PER_PAGE'], False)
+    next_url = url_for('platform.messages', page=messages_list.next_num) if messages_list.has_next else None
+    prev_url = url_for('platform.messages', page=messages_list.prev_num) if messages_list.has_prev else None
+    return render_template(
+        'platform/messages.html',
+        messages=messages_list.items,
+        next_url=next_url,
+        prev_url=prev_url
+    )
+
+
+@platform_bp.route('/send_message/<user_id>', methods=['GET', 'POST'])
+@login_required
+def send_message(user_id):
+    recipient = User.get_by_id(user_id)
+    form = MessageForm()
+
+    if form.validate_on_submit():
+        Message.create(
+            sender_id=current_user.id,
+            recipient_id=recipient.id,
+            text=form.message.data,
+            timestamp=datetime.utcnow()
+        )
+        flash('Your message has been sent.')
+        return redirect(url_for('platform.messages'))
+
+    return render_template('platform/send_message.html', title='Send Message', form=form, user=recipient)
