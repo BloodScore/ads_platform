@@ -7,7 +7,7 @@
             </a>
             <br>
             To:
-			<a href="{{ url_for('platform.profile', username=message.sender.username) }}">
+			<a href="{{ url_for('platform.profile', username=message.recipient.username) }}">
                 {{ message.recipient.username }}
             </a>
             <br>
